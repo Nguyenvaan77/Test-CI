@@ -28,12 +28,6 @@ jobs:
           echo "Repository: $GITHUB_REPOSITORY"
           echo "Ref: $GITHUB_REF"
           echo "Event: $GITHUB_EVENT_NAME"
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          role-session-name: GithubActionsCIAuth-Service
-          aws-region: ${{ vars.AWS_REGION }}
       - name: Inspect OIDC claims
         uses: actions/github-script@v7
         with:
@@ -48,6 +42,13 @@ jobs:
               aud: payload.aud,
               sub: payload.sub
             }, null, 2));
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          role-session-name: GithubActionsCIAuth-Service
+          aws-region: ${{ vars.AWS_REGION }}
+     
 
       - name: Check Aws Cli version
         run: aws --version
