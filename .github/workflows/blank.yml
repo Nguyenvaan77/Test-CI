@@ -34,6 +34,20 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           role-session-name: GithubActionsCIAuth-Service
           aws-region: ${{ vars.AWS_REGION }}
+      - name: Inspect OIDC claims
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const token = await core.getIDToken('sts.amazonaws.com');
+            const payload = JSON.parse(
+              Buffer.from(token.split('.')[1], 'base64url').toString()
+            );
+      
+            console.log(JSON.stringify({
+              iss: payload.iss,
+              aud: payload.aud,
+              sub: payload.sub
+            }, null, 2));
 
       - name: Check Aws Cli version
         run: aws --version
